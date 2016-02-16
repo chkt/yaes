@@ -330,6 +330,52 @@ describe('Dispatcher', () => {
 		});
 	});
 
+
+	describe('#send', () => {
+		it("should require a nonempty string as first argument", () => {
+			const ins = new Dispatcher();
+
+			_assert.throws(() => ins.send(true), TypeError);
+			_assert.throws(() => ins.send(1), TypeError);
+			_assert.throws(() => ins.send(''), TypeError);
+			_assert.doesNotThrow(() => ins.send('foo'));
+			_assert.throws(() => ins.send(Symbol()), TypeError);
+			_assert.throws(() => ins.send(() => 1), TypeError);
+			_assert.throws(() => ins.send({}), TypeError);
+		});
+
+		it("should optionally require an object as second argument", () => {
+			const ins = new Dispatcher();
+
+			_assert.throws(() => ins.send('foo', true), TypeError);
+			_assert.throws(() => ins.send('foo', 1), TypeError);
+			_assert.throws(() => ins.send('foo', '1'), TypeError);
+			_assert.throws(() => ins.send('foo', Symbol()), TypeError);
+			_assert.throws(() => ins.send('foo', () => 1), TypeError);
+			_assert.doesNotThrow(() => ins.send('foo', {}));
+			_assert.doesNotThrow(() => ins.send('foo', []));
+		});
+
+		it("should optionally require a boolean as third argument", () => {
+			const ins = new Dispatcher();
+
+			_assert.doesNotThrow(() => ins.send('foo', {}, true));
+			_assert.throws(() => ins.send('foo', {}, 1), TypeError);
+			_assert.throws(() => ins.send('foo', {}, '1'), TypeError);
+			_assert.throws(() => ins.send('foo', {}, Symbol()), TypeError);
+			_assert.throws(() => ins.send('foo', {}, () => 1), TypeError);
+			_assert.throws(() => ins.send('foo', {}, {}), TypeError);
+		});
+
+		it("should return the instance", () => {
+			const ins = new Dispatcher();
+
+			_assert.strictEqual(ins.send('foo'), ins);
+		});
+
+		it("should call #dispatch");
+	});
+
 	describe('#once', () => {
 		it("should require a nonempty string and a function", () => {
 			const ins = new Dispatcher();
