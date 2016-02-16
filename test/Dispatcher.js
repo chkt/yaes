@@ -330,6 +330,75 @@ describe('Dispatcher', () => {
 		});
 	});
 
+	describe('#once', () => {
+		it("should require a nonempty string and a function", () => {
+			const ins = new Dispatcher();
+			const fn = () => 1;
+
+			_assert.throws(() => ins.once(true, fn), TypeError);
+			_assert.throws(() => ins.once(1, fn), TypeError);
+			_assert.throws(() => ins.once('', fn), TypeError);
+			_assert.doesNotThrow(() => ins.once('foo', fn));
+			_assert.throws(() => ins.once(Symbol(), fn), TypeError);
+			_assert.throws(() => ins.once({}, fn), TypeError);
+			_assert.throws(() => ins.once('foo', true), TypeError);
+			_assert.throws(() => ins.once('foo', 1), TypeError);
+			_assert.throws(() => ins.once('foo', '1'), TypeError);
+			_assert.throws(() => ins.once('foo', Symbol()), TypeError);
+			_assert.throws(() => ins.once('foo', {}), TypeError);
+		});
+
+		it("should return the instance", () => {
+			const ins = new Dispatcher();
+
+			_assert.strictEqual(ins.once('foo', () => 1), ins);
+		});
+
+		it("should only be triggered once when dispatching synchronously", () => {
+			let test = 0;
+
+			new Dispatcher()
+				.once('foo', () => {
+					test += 1;
+				})
+				.dispatch(new Dispatchable('foo'))
+				.dispatch(new Dispatchable('foo'));
+
+			_assert.strictEqual(test, 1);
+		});
+
+		it("should only be triggered once when dispatching asynchronously", done => {
+			let test = 0;
+
+			new Dispatcher()
+				.once('foo', () => {
+					test += 1;
+				})
+				.dispatch(new Dispatchable('foo'), true)
+				.dispatch(new Dispatchable('foo'), true);
+
+			setTimeout(() => {
+				if (test === 1) done();
+				else done(new Error());
+			}, 0);
+		});
+
+		it("should allow for duplicates towards #addListener", () => {
+			let test = 0;
+
+			function fn() {
+				test += 1;
+			}
+
+			const ins = new Dispatcher()
+				.addListener('foo', fn)
+				.once('foo', fn)
+				.dispatch(new Dispatchable('foo'));
+
+			_assert.strictEqual(test, 2);
+		});
+	});
+
 	describe('#hasQueuedType', () => {
 		it("should return false if the instance is not defined", () => {
 			const ins = new Dispatcher()
