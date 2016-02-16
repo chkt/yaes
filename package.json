@@ -27,7 +27,8 @@
 	"main" : "es5/index.js",
 
 	"files" : [
-
+		"source/",
+		"es5/"
 	],
 
 	"babel" : {
