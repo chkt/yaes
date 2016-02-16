@@ -142,6 +142,31 @@ export default class Dispatcher {
 		return this;
 	}
 
+
+	once(type, fn) {
+		if (
+			typeof type !== 'string' || type === '' ||
+			typeof fn !== 'function'
+		) throw new TypeError();
+
+		if (!this.defined) return this;
+
+		const listener = _listener.get(this);
+
+		if (!(type in listener)) listener[type] = [];
+
+		function cb(e) {
+			this.removeListener(type, cb);
+
+			fn();
+		}
+
+		listener[type].push(cb);
+
+		return this;
+	}
+
+
 	removeListener(type, fn) {
 		if (
 			typeof type !== 'string' || type === '' ||
