@@ -229,6 +229,14 @@ var Dispatcher = function () {
 			return this;
 		}
 	}, {
+		key: 'send',
+		value: function send(type) {
+			var data = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+			var async = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
+			return this.dispatch(new _Dispatchable2.default(type, data), async);
+		}
+	}, {
 		key: 'toString',
 		value: function toString() {
 			return '' + this.constructor.toString();
