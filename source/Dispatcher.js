@@ -230,6 +230,10 @@ export default class Dispatcher {
 		return this;
 	}
 
+	send(type, data = {}, async = false) {
+		return this.dispatch(new Dispatchable(type, data), async);
+	}
+
 
 	toString() {
 		return `${ this.constructor.toString() }`;
