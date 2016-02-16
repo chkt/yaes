@@ -14,12 +14,13 @@ $ npm install yaes
 import * as yaes from 'yaes';
 
 
-
 class Class extends yaes.Dispatcher { ... }
 
 const data = { ... };
 
-Class.addListener('type', e => { ... })
-Class.dispatch(new yaes.Dispatchable('type',data));
+
+Class
+	.addListener('type', e => { ... })
+	.dispatch(new yaes.Dispatchable('type',data));
 
 ```
